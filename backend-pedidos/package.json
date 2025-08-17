@@ -1,0 +1,33 @@
+{
+  "name": "backend-saas",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/server.js",
+  "scripts": {
+    "dev": "nodemon src/server.js",
+    "worker": "node src/workers/outboxWorker.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.54.0",
+    "axios": "^1.6.0",
+    "compression": "^1.8.1",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.0.1",
+    "file-type": "^21.0.0",
+    "helmet": "^8.1.0",
+    "jsonwebtoken": "^9.0.2",
+    "multer": "^2.0.2",
+    "node-fetch": "^3.3.2",
+    "pdf-to-printer": "^5.6.0",
+    "pdfkit": "^0.17.1",
+    "pg": "^8.16.3",
+    "qrcode": "^1.5.4",
+    "socket.io": "^4.8.1",
+    "socket.io-client": "^4.8.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.0"
+  }
+}

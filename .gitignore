@@ -1,0 +1,25 @@
+# Node / builds
+node_modules/
+dist/
+build/
+.cache/
+*.log
+npm-debug.log*
+yarn-error.log*
+
+# Env / llaves
+.env
+.env.*
+!.env.example
+
+# Editor / OS
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Coverage
+coverage/
+
+# Vite/Next caches comunes
+*.local
