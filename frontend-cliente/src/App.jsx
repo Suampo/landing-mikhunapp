@@ -7,7 +7,7 @@ import Home from "./pages/Home";
 import Category from "./pages/Category";
 import Combo from "./pages/Combo";
 
-import CartBar from "./components/CartBar";
+import CartBar, { CARTBAR_H } from "./components/CartBar";
 import CartSheet from "./components/CartSheet";
 import { MenuProvider } from "./hooks/useMenuPublic";
 import { openCulqiCheckout } from "./services/culqi";
@@ -204,11 +204,21 @@ export default function App() {
 
       <BrowserRouter>
         <MenuProvider>
+          {/* Este wrapper agrega espacio inferior cuando el carrito está visible */}
+        <div
+          className="min-h-svh"
+          style={
+            itemCount > 0
+              ? { paddingBottom: `calc(${CARTBAR_H}px + env(safe-area-inset-bottom))` }
+              : undefined
+          }
+        >
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/categoria/:id" element={<Category />} />
             <Route path="/combo" element={<Combo />} />
           </Routes>
+        </div>
 
           {/* barra inferior + sheet (reutiliza tus componentes) */}
           <CartBar itemCount={itemCount} total={total} formatPEN={formatPEN}

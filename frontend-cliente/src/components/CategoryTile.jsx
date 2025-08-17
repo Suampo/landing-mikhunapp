@@ -1,7 +1,23 @@
 export default function CategoryTile({ title, image, onClick, subtitle }) {
+  const img = image || "";
   return (
-    <button onClick={onClick} className="flex flex-col rounded-2xl bg-white shadow-sm ring-1 ring-black/5 overflow-hidden hover:shadow-md transition">
-      <img src={image} alt={title} className="h-36 w-full object-cover" />
+    <button
+      onClick={onClick}
+      className="flex flex-col overflow-hidden rounded-2xl bg-white shadow-sm ring-1 ring-black/5 transition hover:shadow-md"
+    >
+      <div className="relative h-36 w-full overflow-hidden">
+        {img ? (
+          <img
+            src={img}
+            alt={title}
+            className="h-full w-full object-cover"
+            loading="lazy"
+            decoding="async"
+          />
+        ) : (
+          <div className="h-full w-full bg-neutral-200" />
+        )}
+      </div>
       <div className="p-4 text-left">
         <div className="font-semibold">{title}</div>
         {subtitle && <div className="text-sm text-neutral-500">{subtitle}</div>}

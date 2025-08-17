@@ -1,5 +1,6 @@
 // src/controllers/combosController.js
 import { pool } from "../config/db.js";
+import { supabase } from "../config/supabase.js"; // <-- ajusta ruta
 
 // GET /api/combos  (admin) -> SOLO activos del restaurant
 export const getCombos = async (req, res) => {
@@ -7,10 +8,10 @@ export const getCombos = async (req, res) => {
     const restaurantId = Number(req.user.restaurantId);
     const { rows } = await pool.query(
       `SELECT id, nombre, precio,
-              categoria_entrada_id, categoria_plato_id, activo
-       FROM combos
-       WHERE restaurant_id = $1 AND activo = TRUE
-       ORDER BY id DESC`,
+              categoria_entrada_id, categoria_plato_id, activo, cover_url
+         FROM combos
+        WHERE restaurant_id = $1 AND activo = TRUE
+        ORDER BY id DESC`,
       [restaurantId]
     );
     res.json(rows);
@@ -44,7 +45,7 @@ export const createCombo = async (req, res) => {
       `INSERT INTO combos (restaurant_id, nombre, precio,
                            categoria_entrada_id, categoria_plato_id, activo)
        VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING id, nombre, precio, categoria_entrada_id, categoria_plato_id, activo`,
+       RETURNING id, nombre, precio, categoria_entrada_id, categoria_plato_id, activo, cover_url`,
       [restaurantId, nombre.trim(), p, c1, c2, !!activo]
     );
     res.status(201).json(rows[0]);
@@ -60,7 +61,6 @@ export const updateCombo = async (req, res) => {
     const restaurantId = Number(req.user.restaurantId);
     const { id } = req.params;
 
-    // Nota: si un campo no viene, dejamos null para que COALESCE mantenga el valor actual
     const {
       nombre = null,
       precio = null,
@@ -71,14 +71,14 @@ export const updateCombo = async (req, res) => {
 
     const { rows } = await pool.query(
       `UPDATE combos
-         SET nombre = COALESCE($3, nombre),
-             precio = COALESCE($4, precio),
-             categoria_entrada_id = COALESCE($5, categoria_entrada_id),
-             categoria_plato_id   = COALESCE($6, categoria_plato_id),
-             activo               = COALESCE($7, activo),
-             updated_at           = NOW()
-       WHERE id = $1 AND restaurant_id = $2
-       RETURNING id, nombre, precio, categoria_entrada_id, categoria_plato_id, activo`,
+          SET nombre               = COALESCE($3, nombre),
+              precio               = COALESCE($4, precio),
+              categoria_entrada_id = COALESCE($5, categoria_entrada_id),
+              categoria_plato_id   = COALESCE($6, categoria_plato_id),
+              activo               = COALESCE($7, activo),
+              updated_at           = NOW()
+        WHERE id = $1 AND restaurant_id = $2
+        RETURNING id, nombre, precio, categoria_entrada_id, categoria_plato_id, activo, cover_url`,
       [
         Number(id),
         restaurantId,
@@ -106,8 +106,8 @@ export const deleteCombo = async (req, res) => {
 
     const { rowCount } = await pool.query(
       `UPDATE combos
-         SET activo = FALSE, updated_at = NOW()
-       WHERE id = $1 AND restaurant_id = $2`,
+          SET activo = FALSE, updated_at = NOW()
+        WHERE id = $1 AND restaurant_id = $2`,
       [Number(id), restaurantId]
     );
 
@@ -116,5 +116,37 @@ export const deleteCombo = async (req, res) => {
   } catch (err) {
     console.error("❌ deleteCombo:", err.message);
     res.status(500).json({ error: "Error desactivando combo" });
+  }
+};
+
+// PUT /api/combos/:id/cover (multipart/form-data -> image)
+export const updateComboCover = async (req, res) => {
+  try {
+    const restaurantId = Number(req.user?.restaurantId);
+    const id = Number(req.params.id);
+    if (!restaurantId || !id) return res.status(400).json({ error: "Datos inválidos" });
+    if (!req.file) return res.status(400).json({ error: "Falta imagen" });
+
+    const ext = (req.file.mimetype || "image/jpeg").split("/")[1] || "jpg";
+    const path = `rest-${restaurantId}/combos/${id}-${Date.now()}.${ext}`;
+
+    const { data, error } = await supabase
+      .storage.from("menu-images")
+      .upload(path, req.file.buffer, { contentType: req.file.mimetype, upsert: true });
+
+    if (error) throw error;
+
+    const { data: pub } = supabase.storage.from("menu-images").getPublicUrl(data.path);
+    const cover_url = pub.publicUrl;
+
+    await pool.query(
+      `UPDATE combos SET cover_url=$1 WHERE id=$2 AND restaurant_id=$3`,
+      [cover_url, id, restaurantId]
+    );
+
+    res.json({ ok: true, cover_url });
+  } catch (e) {
+    console.error("❌ updateComboCover:", e);
+    res.status(500).json({ error: "No se pudo subir la portada" });
   }
 };
