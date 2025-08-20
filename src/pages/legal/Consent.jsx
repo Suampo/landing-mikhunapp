@@ -15,7 +15,7 @@ export default function Consent() {
             <li>Marketing (ofertas y novedades) —opcional y revocable.</li>
           </ul>
           <p className="mt-4">
-            Puedo ejercer mis derechos ARCO en [EMAIL PRIVACIDAD]. Mi información puede compartirse con Culqi
+            Puedo ejercer mis derechos ARCO en mikhunappfood@gmail.com. Mi información puede compartirse con Culqi u otra pasarela de pago
             y proveedores tecnológicos para fines operativos. Se rige por la Ley N.° 29733 y su Reglamento.
           </p>
         </section>

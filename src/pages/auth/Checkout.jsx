@@ -11,7 +11,7 @@ export default function Checkout() {
     nav("/"); // o a un /gracias
   };
 
-  const plan = state?.plan || { name: "Básico", price: 250 };
+  const plan = state?.plan || { name: "Básico", price: 300 };
 
   return (
     <main className="py-12">
@@ -46,7 +46,7 @@ export default function Checkout() {
         </div>
 
         <p className="mt-4 text-xs text-neutral-500">
-          Pagos procesados por Culqi. Emitimos comprobante al correo registrado.
+          Pagos procesados por Culqi u otra pasarela de pago. Emitimos comprobante al correo registrado.
         </p>
       </div>
     </main>
