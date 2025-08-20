@@ -7,7 +7,7 @@ export default function Contact() {
       <section className="mx-auto max-w-6xl px-4 py-16">
         <h1 className="text-3xl font-bold tracking-tight">Contacto</h1>
         <p className="mt-3 text-lg text-neutral-700">
-          Escríbenos a <a className="text-emerald-700 underline" href="mailto:soporte@menugo.app">soporte@menugo.app</a> o WhatsApp <span className="font-medium">+51 950 809 208</span>.
+          Escríbenos a <a className="text-emerald-700 underline" href="mikhunappfood@gmail.com"> mikhunappfood@gmail.com</a> o WhatsApp <span className="font-medium">+51 950 809 208</span>.
         </p>
       </section>
     </main>

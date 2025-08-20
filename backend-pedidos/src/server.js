@@ -19,7 +19,8 @@ import payRoutes from "./routes/payRoutes.js";
 import menuItemRoutes from "./routes/menuItemRoutes.js";
 import categoriaRoutes from "./routes/categoriaRoutes.js";
 import { initSocket } from "./services/realtimeService.js";
-
+import reportesRoutes from "./routes/reportesRoutes.js";
+import inventarioRoutes from "./routes/inventarioRoutes.js";
 const app = express();
 
 // Conf para PaaS/Proxies (X-Forwarded-*)
@@ -95,9 +96,10 @@ app.use("/api/dev", devRoutes);          // 👈 solo para pruebas
 app.use("/api/menu-item", menuImageRoutes);
 app.use("/api/menu-items", menuItemRoutes);
 app.use("/api/combos", combosRoutes);
+app.use("/api/inventario", inventarioRoutes);
 app.use("/api/pay", payRoutes);
 app.use("/api/categorias", categoriaRoutes);
-
+app.use("/api/reportes", reportesRoutes);
 // Estáticos
 app.use(express.static(path.join(__dirname, "public")));
 

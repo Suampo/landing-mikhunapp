@@ -9,7 +9,7 @@ export default function PlanSelection() {
     nav("/registro/pago", {
       state: {
         ...state,
-        plan: { id: "basic", name: "Básico", price: 250 },
+        plan: { id: "basic", name: "Básico", price: 300 },
       },
     });
   };
@@ -28,14 +28,14 @@ export default function PlanSelection() {
             <div className="text-lg font-semibold">Básico</div>
             <div className="text-sm text-neutral-600">Incluye todo para operar desde el día 1</div>
             <div className="mt-2 text-3xl font-bold">
-              S/ 250 <span className="text-base font-normal text-neutral-500">/ mes</span>
+              S/ 300 <span className="text-base font-normal text-neutral-500">/ mes</span>
             </div>
             <ul className="mt-4 space-y-1 text-sm text-neutral-700">
               <li>• Menú digital, categorías y fotos</li>
               <li>• QRs por mesa y estados de pedido</li>
               <li>• Panel de cocina en tiempo real</li>
               <li>• Comanda térmica (Raspberry) incluida</li>
-              <li>• Pagos con Culqi (test/producción)</li>
+              <li>• Pagos con Culqi u otra pasarela de Pago(test/producción)</li>
               <li>• Reporte básico y export CSV</li>
               <li>• Soporte estándar 7/7</li>
             </ul>

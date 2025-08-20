@@ -12,13 +12,20 @@ export const updateCombo = async (id, payload) =>
 
 export const deleteCombo = async (id) => {
   try {
-    // si tu backend soporta DELETE:
     return (await API.delete(`/combos/${id}`)).data;
   } catch (e) {
-    // fallback: desactivar
     if (e?.response?.status === 405 || e?.response?.status === 404) {
       return (await API.put(`/combos/${id}`, { activo: false })).data;
     }
     throw e;
   }
+};
+
+// NUEVO: subir portada de combo
+export const uploadComboCover = (id, file) => {
+  const form = new FormData();
+  form.append("image", file);
+  return API.put(`/combos/${id}/cover`, form, {
+    headers: { "Content-Type": "multipart/form-data" },
+  }).then((r) => r.data);
 };

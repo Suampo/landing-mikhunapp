@@ -1,9 +1,8 @@
-// controllers/menuController.js
+// src/controllers/menuController.js
 import { pool } from "../config/db.js";
 
 /**
- * ADMIN: devuelve TODOS los items (activos e inactivos) del restaurante.
- * Útil para poder activar/inactivar desde el panel.
+ * ADMIN: devuelve TODOS los items del restaurante.
  */
 export const getMenu = async (req, res) => {
   try {
@@ -17,25 +16,21 @@ export const getMenu = async (req, res) => {
     );
     res.json(rows);
   } catch (err) {
-    console.error("❌ Error obteniendo el menú admin:", err.message);
+    console.error("❌ Error obteniendo el menú admin:", err);
     res.status(500).json({ error: "Error obteniendo el menú admin" });
   }
 };
 
 /**
- * PÚBLICO: devuelve categorías con items activos + combos activos (con sus opciones).
- * Respuesta: { categories: [{id, nombre, items:[...]}], combos: [{...}] }
+ * PÚBLICO: categorías (con cover) + combos (con cover) + opciones.
  */
 export const getMenuPublic = async (req, res) => {
   try {
-    // Permite venir por query (cliente QR) o por token (si más adelante lo usas con auth)
-    const restaurantId = Number(
-      req.query.restaurantId || req.user?.restaurantId || 1
-    );
+    const restaurantId = Number(req.query.restaurantId || req.user?.restaurantId || 1);
 
-    // 1) Categorías del restaurante
+    // Categorías
     const { rows: catRows } = await pool.query(
-      `SELECT id, nombre
+      `SELECT id, nombre, cover_url
          FROM categorias
         WHERE restaurant_id = $1
         ORDER BY id ASC`,
@@ -43,7 +38,6 @@ export const getMenuPublic = async (req, res) => {
     );
 
     const categories = [];
-    // Para cada categoría, carga sus items ACTIVOS
     for (const c of catRows) {
       const { rows: items } = await pool.query(
         `SELECT id, nombre, descripcion, precio, imagen_url
@@ -54,10 +48,10 @@ export const getMenuPublic = async (req, res) => {
           ORDER BY id DESC`,
         [restaurantId, c.id]
       );
-      categories.push({ id: c.id, nombre: c.nombre, items });
+      categories.push({ id: c.id, nombre: c.nombre, cover_url: c.cover_url, items });
     }
 
-    // Items activos SIN categoría (NULL) → categoría "Otros"
+    // Items sin categoría
     const { rows: noCatItems } = await pool.query(
       `SELECT id, nombre, descripcion, precio, imagen_url
          FROM menu_items
@@ -68,39 +62,31 @@ export const getMenuPublic = async (req, res) => {
       [restaurantId]
     );
     if (noCatItems.length) {
-      categories.push({ id: null, nombre: "Otros", items: noCatItems });
+      categories.push({ id: null, nombre: "Otros", cover_url: null, items: noCatItems });
     }
 
-    // 2) Combos activos y sus opciones (entradas/platos)
+    // Combos
     const { rows: comboRows } = await pool.query(
-      `SELECT id, nombre, precio, categoria_entrada_id, categoria_plato_id
+      `SELECT id, nombre, precio, cover_url, categoria_entrada_id, categoria_plato_id
          FROM combos
-        WHERE restaurant_id = $1
-          AND activo = TRUE
+        WHERE restaurant_id = $1 AND activo = TRUE
         ORDER BY id DESC`,
       [restaurantId]
     );
 
     const combos = [];
     for (const co of comboRows) {
-      // Opciones: items activos de la categoría de entrada
       const { rows: entradas } = await pool.query(
         `SELECT id, nombre, descripcion, precio, imagen_url
            FROM menu_items
-          WHERE restaurant_id=$1
-            AND activo=TRUE
-            AND categoria_id=$2
+          WHERE restaurant_id=$1 AND activo=TRUE AND categoria_id=$2
           ORDER BY id DESC`,
         [restaurantId, co.categoria_entrada_id]
       );
-
-      // Opciones: items activos de la categoría de plato
       const { rows: platos } = await pool.query(
         `SELECT id, nombre, descripcion, precio, imagen_url
            FROM menu_items
-          WHERE restaurant_id=$1
-            AND activo=TRUE
-            AND categoria_id=$2
+          WHERE restaurant_id=$1 AND activo=TRUE AND categoria_id=$2
           ORDER BY id DESC`,
         [restaurantId, co.categoria_plato_id]
       );
@@ -108,7 +94,8 @@ export const getMenuPublic = async (req, res) => {
       combos.push({
         id: co.id,
         nombre: co.nombre,
-        precio: co.precio,       // precio del combo (no sumar individuales)
+        precio: co.precio,
+        cover_url: co.cover_url,
         entradas,
         platos,
       });
@@ -116,7 +103,7 @@ export const getMenuPublic = async (req, res) => {
 
     return res.json({ categories, combos });
   } catch (err) {
-    console.error("❌ Error obteniendo el menú público:", err.message);
+    console.error("❌ Error obteniendo el menú público:", err);
     res.status(500).json({ error: "Error obteniendo el menú público" });
   }
 };

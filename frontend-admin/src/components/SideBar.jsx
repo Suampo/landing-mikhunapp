@@ -5,9 +5,9 @@ import {
   List,
   Utensils,
   ShoppingCart,
-  Users,
-  BarChart2,
-  LogOut,
+  Boxes,
+  TrendingUp,
+  LogOut,        // 👈 añade esto
 } from "lucide-react";
 
 export default function SideBar({ open, setOpen }) {
@@ -15,13 +15,13 @@ export default function SideBar({ open, setOpen }) {
   const { pathname } = useLocation();
 
   const menus = [
-    { name: "Inicio", icon: <Home size={20} />, link: "/dashboard" },
-    { name: "Mesas", icon: <List size={20} />, link: "/mesas" },
-    { name: "Menú", icon: <Utensils size={20} />, link: "/menu" },
-    { name: "Pedidos", icon: <ShoppingCart size={20} />, link: "/pedidos" },
-    { name: "Usuarios", icon: <Users size={20} />, link: "/usuarios" },
-    { name: "Reportes", icon: <BarChart2 size={20} />, link: "/reportes" },
-  ];
+  { name: "Inicio",     icon: <Home size={20} />,        link: "/dashboard" },
+  { name: "Mesas",      icon: <List size={20} />,        link: "/mesas" },
+  { name: "Menú",       icon: <Utensils size={20} />,    link: "/menu" },
+  { name: "Pedidos",    icon: <ShoppingCart size={20} />,link: "/pedidos" },
+  { name: "Inventario", icon: <Boxes size={20} />,       link: "/inventario" }, // nuevo
+  { name: "Reportes",   icon: <TrendingUp size={20} />,  link: "/reportes" },   // nuevo
+];
 
   const handleLogout = useCallback(() => {
     localStorage.removeItem("token");

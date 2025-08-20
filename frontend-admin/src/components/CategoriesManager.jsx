@@ -5,20 +5,25 @@ import {
   createCategory,
   updateCategory,
   deleteCategory,
+  uploadCategoryCover,
 } from "../services/categoriesApi";
 
 export default function CategoriesManager({ onChange }) {
   const [loading, setLoading] = useState(false);
   const [cats, setCats] = useState([]);
   const [nombre, setNombre] = useState("");
+  const [uploadingId, setUploadingId] = useState(null);
 
-  // guardamos la última versión enviada al padre para evitar onChange redundantes
   const lastSentRef = useRef([]);
 
   const shallowEqualCats = (a = [], b = []) => {
     if (a.length !== b.length) return false;
     for (let i = 0; i < a.length; i++) {
-      if (a[i]?.id !== b[i]?.id || a[i]?.nombre !== b[i]?.nombre) return false;
+      if (
+        a[i]?.id !== b[i]?.id ||
+        a[i]?.nombre !== b[i]?.nombre ||
+        a[i]?.cover_url !== b[i]?.cover_url
+      ) return false;
     }
     return true;
   };
@@ -26,11 +31,9 @@ export default function CategoriesManager({ onChange }) {
   const load = useCallback(async () => {
     setLoading(true);
     try {
-      const c = await getCategories(); // restaurantId viene del token
+      const c = await getCategories();
       const safe = Array.isArray(c) ? c : [];
       setCats(safe);
-
-      // solo notificar al padre si de verdad cambió
       if (onChange && !shallowEqualCats(lastSentRef.current, safe)) {
         onChange(safe);
         lastSentRef.current = safe;
@@ -40,10 +43,7 @@ export default function CategoriesManager({ onChange }) {
     }
   }, [onChange]);
 
-  useEffect(() => {
-    // se ejecuta solo una vez (o cuando cambie la referencia estable de load)
-    load();
-  }, [load]);
+  useEffect(() => { load(); }, [load]);
 
   const add = async (e) => {
     e.preventDefault();
@@ -66,6 +66,20 @@ export default function CategoriesManager({ onChange }) {
     if (!confirm("¿Eliminar categoría? (los platos quedarán sin categoría)")) return;
     await deleteCategory(id);
     await load();
+  };
+
+  const pickCover = async (id, file) => {
+    if (!file) return;
+    try {
+      setUploadingId(id);
+      await uploadCategoryCover(id, file);
+      await load();
+    } catch (e) {
+      console.error(e);
+      alert("No se pudo subir la imagen");
+    } finally {
+      setUploadingId(null);
+    }
   };
 
   return (
@@ -94,30 +108,61 @@ export default function CategoriesManager({ onChange }) {
         ) : cats.length === 0 ? (
           <p className="text-sm text-neutral-500">Sin categorías.</p>
         ) : (
-          cats.map((c) => (
-            <div
-              key={c.id}
-              className="flex items-center justify-between rounded-lg border border-neutral-200 bg-white px-3 py-2"
-            >
-              <span className="truncate text-sm">{c.nombre}</span>
-              <div className="flex gap-2">
-                <button
-                  type="button"
-                  onClick={() => rename(c.id)}
-                  className="rounded-md border px-2 py-1 text-xs hover:bg-neutral-50"
-                >
-                  Renombrar
-                </button>
-                <button
-                  type="button"
-                  onClick={() => remove(c.id)}
-                  className="rounded-md border border-red-300 bg-red-50 px-2 py-1 text-xs text-red-700 hover:bg-red-100"
-                >
-                  Eliminar
-                </button>
+          cats.map((c) => {
+            const hasCover = typeof c.cover_url === "string" && c.cover_url.trim().length > 0;
+            return (
+              <div
+                key={c.id}
+                className="flex items-center justify-between gap-3 rounded-lg border border-neutral-200 bg-white px-3 py-2"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="h-10 w-14 overflow-hidden rounded bg-neutral-100 ring-1 ring-black/5">
+                    {hasCover ? (
+                      <img
+                        src={c.cover_url}
+                        alt={c.nombre}
+                        className="h-full w-full object-cover"
+                        loading="lazy"
+                        decoding="async"
+                      />
+                    ) : (
+                      <div className="h-full w-full" />
+                    )}
+                  </div>
+                  <span className="truncate text-sm">{c.nombre}</span>
+                  {uploadingId === c.id && (
+                    <span className="text-xs text-neutral-500">Subiendo…</span>
+                  )}
+                </div>
+
+                <div className="flex items-center gap-2">
+                  <label className="cursor-pointer rounded-md border px-2 py-1 text-xs hover:bg-neutral-50">
+                    Imagen
+                    <input
+                      type="file"
+                      accept="image/*"
+                      hidden
+                      onChange={(e) => pickCover(c.id, e.target.files?.[0])}
+                    />
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => rename(c.id)}
+                    className="rounded-md border px-2 py-1 text-xs hover:bg-neutral-50"
+                  >
+                    Renombrar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => remove(c.id)}
+                    className="rounded-md border border-red-300 bg-red-50 px-2 py-1 text-xs text-red-700 hover:bg-red-100"
+                  >
+                    Eliminar
+                  </button>
+                </div>
               </div>
-            </div>
-          ))
+            );
+          })
         )}
       </div>
     </div>
