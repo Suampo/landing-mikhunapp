@@ -25,15 +25,13 @@ function Nav() {
     <header className="sticky top-0 z-20 border-b bg-white/80 backdrop-blur">
       <div className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
         <NavLink to="/" className="text-lg font-bold tracking-tight">
-          MenuGo
+          MikhunApp
         </NavLink>
 
         <nav className="flex items-center gap-4">
           <NavLink to="/" end className={({ isActive }) => (isActive ? active : base)}>
-            Inicio 
-             <div className="pointer-events-none absolute -top-30 -left-30 h-[320px] w-[320px] rounded-full bg-emerald-400/12 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-48 -right-48 h-[320px] w-[320px] rounded-full bg-emerald-400/10 blur-3xl" />
-          </NavLink>
+   Inicio
+ </NavLink>
           <NavLink to="/#services" className={({ isActive }) => (isActive ? active : base)}>
             Servicios
           </NavLink>
@@ -66,7 +64,7 @@ function Footer() {
     <footer className="mt-16 border bg-white">
       <div className="mx-auto max-w-6xl px-4 py-8 grid gap-6 sm:grid-cols-3">
         <div>
-          <div className="text-lg font-bold">MenuGo</div>
+          <div className="text-lg font-bold">Mikhunapp</div>
           <p className="mt-2 text-sm text-neutral-600">
             Pedidos por QR, pago online y comanda automática. SaaS para restaurantes.
           </p>
@@ -84,15 +82,15 @@ function Footer() {
           <p className="mt-2 text-sm text-neutral-600">
             Razón social · RUC 00000000000<br/>
             Lima, Lima, Perú<br/>
-            soporte@menugo.app · +51 950 809 208
+            mikhunappfood@gmail.com · +51 950 809 208
           </p>
           <p className="mt-3 text-xs text-neutral-500">
-            Pagos procesados de forma segura con Culqi.
+            Pagos procesados de forma segura con Culqi u otra pasarela de Pago.
           </p>
         </div>
       </div>
       <div className="border-t py-4 text-center text-xs text-neutral-500">
-        © {new Date().getFullYear()} MenuGo. Todos los derechos reservados.
+        © {new Date().getFullYear()} Mikhunapp. Todos los derechos reservados.
       </div>
     </footer>
   );

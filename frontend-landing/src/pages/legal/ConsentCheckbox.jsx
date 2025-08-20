@@ -39,7 +39,7 @@ export default function ConsentCheckbox({
           className="mt-1 h-4 w-4 rounded border-neutral-300 text-emerald-600 focus:ring-emerald-500"
         />
         <span>
-          Autorizo recibir <strong>ofertas y novedades</strong> de MenuGo (puedo
+          Autorizo recibir <strong>ofertas y novedades</strong> de Mikhunapp (puedo
           revocar en cualquier momento).    
         </span>
       </label>
