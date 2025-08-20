@@ -1,25 +1,16 @@
-# Node / builds
+# deps / builds
 node_modules/
 dist/
 build/
-.cache/
-*.log
-npm-debug.log*
-yarn-error.log*
+.vite/
+.vite-temp/
 
-# Env / llaves
+# entornos/secretos
 .env
 .env.*
 !.env.example
 
-# Editor / OS
+# SO/editores
 .DS_Store
+Thumbs.db
 .vscode/
-.idea/
-*.swp
-
-# Coverage
-coverage/
-
-# Vite/Next caches comunes
-*.local
