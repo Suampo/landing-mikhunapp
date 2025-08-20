@@ -1,39 +1,56 @@
 // src/pages/Login.jsx
-import { useState } from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-
-const API = import.meta.env.VITE_API_BASE || "http://localhost:4000";
+import { useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
+import API from "../services/axiosInstance";
 
 export default function Login() {
   const nav = useNavigate();
+  const loc = useLocation();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPass, setShowPass] = useState(false);
   const [remember, setRemember] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [msg, setMsg] = useState("");
+
+  // Si ya hay token válido, entra directo
+  useEffect(() => {
+    const token = localStorage.getItem("token") || sessionStorage.getItem("token");
+    if (!token) return;
+    API.get("/auth/validate-token")
+      .then(() => nav("/dashboard", { replace: true }))
+      .catch(() => {
+        localStorage.removeItem("token");
+        sessionStorage.removeItem("token");
+      });
+  }, [nav]);
 
   const canSubmit = email.trim() !== "" && password !== "" && !loading;
 
   const handleLogin = async (e) => {
     e.preventDefault();
     if (!canSubmit) return;
+    setMsg("");
 
     try {
       setLoading(true);
-      const { data } = await axios.post(`${API}/api/auth/login`, {
+
+      // ⬇️ usa axios instance, lee data.token
+      const { data } = await API.post("/auth/login", {
         email: email.trim(),
         password,
       });
+
+      if (!data?.token) throw new Error("Sin token");
 
       const storage = remember ? localStorage : sessionStorage;
       storage.setItem("token", data.token);
       if (!remember) localStorage.removeItem("token");
 
-      nav("/");
+      const to = loc.state?.from?.pathname || "/dashboard";
+      window.location.replace(to); // evita volver al login con "back"
     } catch (err) {
-      console.error(err?.response?.data || err.message);
-      alert(err?.response?.data?.error || "Credenciales inválidas");
+      setMsg(err?.response?.data?.error || err?.message || "Credenciales inválidas");
     } finally {
       setLoading(false);
     }
@@ -54,11 +71,17 @@ export default function Login() {
         </div>
 
         <h1 className="text-center text-2xl font-bold tracking-tight">
-          MenuGo — Panel Admin
+          Mikhunapp — Panel Admin
         </h1>
         <p className="mt-1 text-center text-sm text-neutral-600">
           Gestiona tu menú, combos y pedidos en un solo lugar.
         </p>
+
+        {msg && (
+          <div className="mt-3 rounded border border-red-200 bg-red-50 p-2 text-sm text-red-700">
+            {msg}
+          </div>
+        )}
 
         <label className="mt-6 block text-sm font-medium text-neutral-900">
           Email
@@ -67,7 +90,7 @@ export default function Login() {
           type="email"
           autoComplete="username"
           className="mt-1 w-full rounded-xl border border-neutral-300 bg-white px-3 py-2 text-sm outline-none transition focus:border-emerald-500"
-          placeholder="admin@menugo.app"
+          placeholder="admin@demo.com"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -109,21 +132,11 @@ export default function Login() {
           disabled={!canSubmit}
           className="mt-4 inline-flex w-full items-center justify-center rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white shadow-md transition hover:bg-emerald-700 active:translate-y-[1px] disabled:cursor-not-allowed disabled:opacity-80"
         >
-          {loading ? (
-            <>
-              <svg className="mr-2 h-4 w-4 animate-spin" viewBox="0 0 24 24" fill="none">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
-              </svg>
-              Entrando…
-            </>
-          ) : (
-            "Entrar"
-          )}
+          {loading ? "Entrando…" : "Entrar"}
         </button>
 
         <p className="mt-5 text-center text-xs text-neutral-500">
-          © {new Date().getFullYear()} MenuGo — Panel
+          © {new Date().getFullYear()} Mikhunapp — Panel
         </p>
       </form>
     </div>
