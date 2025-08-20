@@ -143,7 +143,7 @@ export default function App() {
     try {
       const amountPreview = Math.round(total * 100);
       if (!amountPreview || amountPreview <= 0) return alert("Tu carrito está vacío.");
-      const email = "cliente@menugo.app";
+      const email = "mikhunappfood@gmail.com";
       const token = await autoLogin();
       const headers = { Authorization: `Bearer ${token}` };
       const idempotencyKey = genIdem();

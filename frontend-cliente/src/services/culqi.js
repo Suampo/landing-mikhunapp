@@ -13,7 +13,7 @@ export function ensureCulqi(publicKey, config) {
 export function openCulqiCheckout({ amount, email, orderId, onToken, onOrder }) {
   const publicKey = import.meta.env.VITE_CULQI_PUBLIC_KEY; // define esto en .env del cliente
   const settings = {
-    title: "MenuGo",
+    title: "Mikhunapp",
     currency: "PEN",
     amount,
     order: orderId || undefined, // si pasas order → muestra Yape/otros
