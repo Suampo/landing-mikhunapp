@@ -88,7 +88,7 @@ export default function RegisterRestaurant() {
      ${hasError ? "border-red-400 focus:border-red-500" : "border-neutral-300 focus:border-emerald-500"}`;
 
   return (
-    <main className="relative overflow-hidden">
+    <main className="relative overflow-x-hidden min-h-screen">
       {/* blobs verdes */}
       <div className="pointer-events-none absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-emerald-400/12 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-48 -right-48 h-[460px] w-[460px] rounded-full bg-emerald-400/10 blur-3xl" />
