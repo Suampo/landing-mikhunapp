@@ -30,8 +30,8 @@ function Nav() {
 
         <nav className="flex items-center gap-4">
           <NavLink to="/" end className={({ isActive }) => (isActive ? active : base)}>
-   Inicio
- </NavLink>
+            Inicio
+          </NavLink>
           <NavLink to="/#services" className={({ isActive }) => (isActive ? active : base)}>
             Servicios
           </NavLink>
@@ -45,14 +45,12 @@ function Nav() {
             Contacto
           </NavLink>
 
-          {/* CTA visibles */}
           <Link
             to="/registro"
             className="rounded-lg border px-3 py-1.5 text-sm font-medium hover:bg-neutral-50"
           >
             Crear cuenta
           </Link>
-          
         </nav>
       </div>
     </header>
@@ -72,15 +70,15 @@ function Footer() {
         <div>
           <div className="font-semibold">Legal</div>
           <ul className="mt-2 space-y-1 text-sm">
-            <li><a className="hover:underline" href="/legal/terminos">Términos y Condiciones</a></li>
-            <li><a className="hover:underline" href="/legal/privacidad">Política de Privacidad</a></li>
-            <li><a className="hover:underline" href="/legal/devoluciones">Cambios y Devoluciones</a></li>
+            <li><Link className="hover:underline" to="/legal/terminos">Términos y Condiciones</Link></li>
+            <li><Link className="hover:underline" to="/legal/privacidad">Política de Privacidad</Link></li>
+            <li><Link className="hover:underline" to="/legal/devoluciones">Cambios y Devoluciones</Link></li>
           </ul>
         </div>
         <div>
           <div className="font-semibold">Empresa</div>
           <p className="mt-2 text-sm text-neutral-600">
-            Razón social · RUC 00000000000<br/>
+            Razón social · RUC 10778055070<br/>
             Lima, Lima, Perú<br/>
             mikhunappfood@gmail.com · +51 950 809 208
           </p>
@@ -99,7 +97,7 @@ function Footer() {
 export default function AppLayout() {
   return (
     <div className="min-h-svh bg-neutral-50 text-neutral-900 relative">
-      <BackgroundGlows />   {/* 👈 glows en toda la página */}
+      <BackgroundGlows />
       <ScrollToHash />
       <Nav />
       <Outlet />
