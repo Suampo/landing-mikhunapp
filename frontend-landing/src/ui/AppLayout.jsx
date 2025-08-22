@@ -45,11 +45,12 @@ export default function AppLayout() {
 
           {/* Nav desktop */}
           <nav className="hidden sm:flex items-center gap-6 text-sm">
-            <a href="#services" className="hover:text-emerald-700">Servicios</a>
-            <a href="#features" className="hover:text-emerald-700">Funciones</a>
-            <a href="#prices" className="hover:text-emerald-700">Precios</a>
-            <Link to="/contacto" className="hover:text-emerald-700">Contacto</Link>
-          </nav>
+  <Link to="/#services" className="hover:text-emerald-700">Servicios</Link>
+  <Link to="/#features" className="hover:text-emerald-700">Funciones</Link>
+  <Link to="/#prices"   className="hover:text-emerald-700">Precios</Link>
+  <Link to="/contacto"  className="hover:text-emerald-700">Contacto</Link>
+</nav>
+
 
           {/* CTA desktop */}
           <div className="hidden sm:flex items-center">
@@ -81,19 +82,20 @@ export default function AppLayout() {
               <span className="font-semibold">Menú</span>
               <button onClick={() => setOpen(false)} aria-label="Cerrar">✕</button>
             </div>
-            <nav className="grid gap-3 text-base">
-              <a href="#services" onClick={() => setOpen(false)}>Servicios</a>
-              <a href="#features" onClick={() => setOpen(false)}>Funciones</a>
-              <a href="#prices" onClick={() => setOpen(false)}>Precios</a>
-              <Link to="/contacto" onClick={() => setOpen(false)}>Contacto</Link>
-              <Link
-                to="/registro"
-                className="mt-2 rounded-xl border border-neutral-300 px-4 py-2 text-center"
-                onClick={() => setOpen(false)}
-              >
-                Crear cuenta
-              </Link>
-            </nav>
+           <nav className="grid gap-3 text-base">
+  <Link to="/#services" onClick={() => setOpen(false)}>Servicios</Link>
+  <Link to="/#features" onClick={() => setOpen(false)}>Funciones</Link>
+  <Link to="/#prices"   onClick={() => setOpen(false)}>Precios</Link>
+  <Link to="/contacto"  onClick={() => setOpen(false)}>Contacto</Link>
+  <Link
+    to="/registro"
+    className="mt-2 rounded-xl border border-neutral-300 px-4 py-2 text-center"
+    onClick={() => setOpen(false)}
+  >
+    Crear cuenta
+  </Link>
+</nav>
+
           </aside>
         </div>
       )}
