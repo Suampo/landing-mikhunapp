@@ -120,6 +120,7 @@ export default function AppLayout() {
               <li><Link className="hover:underline" to="/legal/terminos">Términos y Condiciones</Link></li>
               <li><Link className="hover:underline" to="/legal/privacidad">Política de Privacidad</Link></li>
               <li><Link className="hover:underline" to="/legal/devoluciones">Cambios y Devoluciones</Link></li>
+              <li><Link className="hover:underline" to="/libro-de-reclamaciones">Libro de Reclamaciones</Link></li>
             </ul>
           </div>
           <div>
