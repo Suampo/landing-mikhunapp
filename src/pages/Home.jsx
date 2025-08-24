@@ -3,16 +3,16 @@ import { Link } from "react-router-dom";
 
 export default function Home() {
   const services = [
-    { title: "Panel de inicio (Admin)", desc: "Resumen operativo: ventas del día, pedidos activos, producto más vendido y curva de últimos 7 días.", img: "/services/01-dashboard.png", alt: "Panel admin" },
-    { title: "Mesas y QRs", desc: "Crea/edita mesas, genera un QR por mesa en un clic y mantén todo ordenado con búsqueda.", img: "/services/02-mesas.png", alt: "Mesas y QR" },
-    { title: "Menú (Administrador)", desc: "Gestiona categorías, precios, fotos y disponibilidad. Crea combos y define sus componentes.", img: "/services/03-menu-admin.png", alt: "Menú admin" },
-    { title: "Pedidos en vivo (Cocina)", desc: "Panel de cocina/KDS con estados en tiempo real. Compatible con comanda impresa.", img: "/services/04-pedidos-cocina.png", alt: "Cocina KDS" },
-    { title: "Menú Digital — Fondos", desc: "Catálogo de platos de fondo, fotos grandes y botón de agregar. Optimizado para móvil.", img: "/services/05-menu-fondos.png", alt: "Fondos" },
-    { title: "Menú Digital — Entradas", desc: "Sección de entradas con imágenes, descripción breve y precio visible.", img: "/services/06-menu-entradas.png", alt: "Entradas" },
-    { title: "Menú Digital — Extras", desc: "Agrega extras y adicionales. Todo configurable desde el panel admin.", img: "/services/07-menu-extras.png", alt: "Extras" },
-    { title: "Combos (card)", desc: "Crea combos del día (ej. Menú S/ 12). Define precio y categorías permitidas.", img: "/services/08-combos-card.png", alt: "Combos card" },
-    { title: "Combo: elige entrada", desc: "El cliente elige una (1) entrada de entre las permitidas para el combo.", img: "/services/09-combo-elige-entrada.png", alt: "Elegir entrada" },
-    { title: "Combo: elige plato", desc: "Luego elige un (1) plato de fondo. Reglas de selección y stock desde el admin.", img: "/services/10-combo-elige-plato.png", alt: "Elegir plato" },
+    { title: "Panel de inicio (Admin)", desc: "Resumen operativo: ventas del día, pedidos activos, producto más vendido y curva de últimos 7 días.", img: "/services/01-dashboard.jpg", alt: "Panel admin", w:1280, h:720 },
+    { title: "Mesas y QRs", desc: "Crea/edita mesas, genera un QR por mesa en un clic y mantén todo ordenado con búsqueda.", img: "/services/02-mesas.jpg", alt: "Mesas y QR", w:1280, h:720 },
+    { title: "Menú (Administrador)", desc: "Gestiona categorías, precios, fotos y disponibilidad. Crea combos y define sus componentes.", img: "/services/03-menu-admin.jgp", alt: "Menú admin", w:1280, h:720 },
+    { title: "Pedidos en vivo (Cocina)", desc: "Panel de cocina/KDS con estados en tiempo real. Compatible con comanda impresa.", img: "/services/04-pedidos-cocina.jpg", alt: "Cocina KDS", w:1280, h:720 },
+    { title: "Menú Digital — Fondos", desc: "Catálogo de platos de fondo, fotos grandes y botón de agregar. Optimizado para móvil.", img: "/services/05-menu-fondos.jgp", alt: "Fondos", w:1280, h:720 },
+    { title: "Menú Digital — Entradas", desc: "Sección de entradas con imágenes, descripción breve y precio visible.", img: "/services/06-menu-entradas.jpg", alt: "Entradas", w:1280, h:720 },
+    { title: "Menú Digital — Extras", desc: "Agrega extras y adicionales. Todo configurable desde el panel admin.", img: "/services/07-menu-extras.jpg", alt: "Extras", w:1280, h:720 },
+    { title: "Combos (card)", desc: "Crea combos del día (ej. Menú S/ 12). Define precio y categorías permitidas.", img: "/services/08-combos-card.jpg", alt: "Combos card", w:1280, h:720 },
+    { title: "Combo: elige entrada", desc: "El cliente elige una (1) entrada de entre las permitidas para el combo.", img: "/services/09-combo-elige-entrada.jpg", alt: "Elegir entrada", w:1280, h:720 },
+    { title: "Combo: elige plato", desc: "Luego elige un (1) plato de fondo. Reglas de selección y stock desde el admin.", img: "/services/10-combo-elige-plato.jpg", alt: "Elegir plato", w:1280, h:720 },
   ];
 
   const features = [
@@ -31,21 +31,27 @@ export default function Home() {
     { q: "¿Cómo se cobra el servicio?", a: "Plan Básico con todo incluido (mensual o anual con descuento). Add-ons opcionales bajo demanda." },
   ];
 
-  const card =
-    "rounded-2xl bg-white/90 backdrop-blur border border-neutral-200/70 shadow-sm hover:shadow-md transition";
+  const card = "rounded-2xl bg-white/90 backdrop-blur border border-neutral-200/70 shadow-sm hover:shadow-md transition";
 
   return (
     <main className="relative overflow-x-hidden">
       <style>{`
         @keyframes marquee { 0% { transform: translateX(0) } 100% { transform: translateX(-50%) } }
         @keyframes float { 0%,100% { transform: translateY(0) } 50% { transform: translateY(-6px) } }
+
+        /* Evita repintados masivos y respeta reduced motion */
+        @media (prefers-reduced-motion: reduce) {
+          .anim, .marquee { animation: none !important; }
+        }
+        .section-cv { content-visibility: auto; contain-intrinsic-size: 1000px; }
       `}</style>
 
+      {/* FONDO (sin blur en mobile; blur reducido en md+) */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-        <div className="absolute -top-40 -left-40 h-[620px] w-[620px] rounded-full bg-emerald-400/15 blur-3xl" />
-        <div className="absolute top-1/3 -right-40 h-[520px] w-[520px] rounded-full bg-teal-300/10 blur-3xl" />
+        <div className="hidden md:block absolute -top-40 -left-40 h-[520px] w-[520px] rounded-full bg-emerald-400/15 md:blur-2xl will-change-transform" />
+        <div className="hidden md:block absolute top-1/3 -right-40 h-[420px] w-[420px] rounded-full bg-teal-300/10 md:blur-xl will-change-transform" />
         <div
-          className="absolute inset-0 opacity-[0.18]"
+          className="absolute inset-0 opacity-[0.14]"
           style={{
             backgroundImage:
               "radial-gradient(#e5e7eb 1px, transparent 1px), radial-gradient(#e5e7eb 1px, transparent 1px)",
@@ -57,7 +63,7 @@ export default function Home() {
       </div>
 
       {/* HERO */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-emerald-50 via-white to-white">
+      <section className="section-cv relative overflow-hidden bg-gradient-to-b from-emerald-50 via-white to-white">
         <div className="mx-auto grid max-w-6xl grid-cols-1 gap-10 px-4 py-16 md:grid-cols-[1.05fr_1fr] md:py-20">
           {/* Copy */}
           <div>
@@ -76,7 +82,6 @@ export default function Home() {
               <a href="#services" className="rounded-xl bg-emerald-600 px-5 py-3 text-white shadow-sm transition hover:bg-emerald-500">
                 Ver servicios
               </a>
-              {/* 👉 Link al registro */}
               <Link to="/registro" className="rounded-xl border border-neutral-200 bg-white px-5 py-3 font-medium transition hover:bg-neutral-50">
                 Crear cuenta
               </Link>
@@ -86,7 +91,7 @@ export default function Home() {
               {[
                 "Multi-tenant por restaurante",
                 "QRs por mesa y estados de pedido",
-                "Integración de pagons online (tarjeta/Yape)",
+                "Integración de pagos online (tarjeta/Yape)",
                 "Conexión de impresora térmica",
               ].map((t) => (
                 <li key={t} className="flex items-center gap-2">
@@ -106,7 +111,7 @@ export default function Home() {
           {/* Media */}
           <div className={card + " p-4"}>
             <div className="relative aspect-[16/5] md:aspect-[13/10] overflow-hidden rounded-xl bg-neutral-100">
-              <div className="pointer-events-none absolute inset-0 -z-10 animate-[float_6s_ease-in-out_infinite] bg-[radial-gradient(45%_45%_at_70%_30%,rgba(16,185,129,0.12),transparent_60%)]" />
+              <div className="pointer-events-none absolute inset-0 -z-10 md:anim md:animate-[float_6s_ease-in-out_infinite] bg-[radial-gradient(45%_45%_at_70%_30%,rgba(16,185,129,0.12),transparent_60%)]" />
               {/* eslint-disable-next-line jsx-a11y/media-has-caption */}
               <video
                 className="h-full w-full object-cover"
@@ -114,10 +119,11 @@ export default function Home() {
                 loop
                 muted
                 playsInline
+                preload="metadata"
                 poster="/services/01-dashboard.png"
                 onError={(e) => {
                   e.currentTarget.outerHTML =
-                    '<img src="/services/QR.jpg" alt="Panel" class="h-full w-full object-cover"/>';
+                    '<img src="/services/QR.jpg" alt="Panel" class="h-full w-full object-cover" width="1280" height="720"/>';
                 }}
               >
                 <source src="/assets/hero.mp4" type="video/mp4" />
@@ -126,18 +132,16 @@ export default function Home() {
 
             {/* Banda de confianza */}
             <div className="mt-4 grid grid-cols-2 gap-2 text-xs sm:text-sm">
-              <div className="flex items-center gap-2 rounded-lg border border-neutral-200 bg-white/70 px-3 py-2">
-                <span>🛡️</span><span>Cifrado TLS/SSL</span>
-              </div>
-              <div className="flex items-center gap-2 rounded-lg border border-neutral-200 bg-white/70 px-3 py-2">
-                <span>💳</span><span>Pagos online</span>
-              </div>
-              <div className="flex items-center gap-2 rounded-lg border border-neutral-200 bg-white/70 px-3 py-2">
-                <span>🧾</span><span>Comanda térmica</span>
-              </div>
-              <div className="flex items-center gap-2 rounded-lg border border-neutral-200 bg-white/70 px-3 py-2">
-                <span>🔌</span><span>Socket.IO en cocina</span>
-              </div>
+              {[
+                ["🛡️","Cifrado TLS/SSL"],
+                ["💳","Pagos online"],
+                ["🧾","Comanda térmica"],
+                ["🔌","Socket.IO en cocina"],
+              ].map(([i,t])=>(
+                <div key={t} className="flex items-center gap-2 rounded-lg border border-neutral-200 bg-white/70 px-3 py-2">
+                  <span>{i}</span><span>{t}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -145,7 +149,7 @@ export default function Home() {
         {/* Marquee */}
         <div className="mx-auto max-w-6xl px-4 pb-8">
           <div className="overflow-hidden rounded-xl border border-neutral-200/70 bg-white/80 backdrop-blur">
-            <div className="flex whitespace-nowrap [animation:marquee_22s_linear_infinite]">
+            <div className="marquee flex whitespace-nowrap [animation:marquee_22s_linear_infinite] will-change-transform">
               {"Culqi · Impresora térmica · Socket.IO · SSL · Idempotencia · Webhooks · Raspberry".split(" · ").map((v, i) => (
                 <div key={i} className="px-6 py-3 text-xs text-neutral-600">{v}</div>
               ))}
@@ -158,7 +162,7 @@ export default function Home() {
       </section>
 
       {/* HOW */}
-      <section id="how" className="relative py-16">
+      <section id="how" className="section-cv relative py-16">
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-b from-emerald-50 via-white to-emerald-50/40" />
         <div className="mx-auto max-w-6xl px-4">
           <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200 bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">✨ Pasos</div>
@@ -180,7 +184,7 @@ export default function Home() {
       </section>
 
       {/* SERVICES */}
-      <section id="services" className="relative py-16 overflow-hidden">
+      <section id="services" className="section-cv relative py-16 overflow-hidden">
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute left-1/2 top-0 h-full w-[140%] -translate-x-1/2 bg-gradient-to-r from-emerald-50 via-white to-emerald-50/40" />
         </div>
@@ -201,6 +205,10 @@ export default function Home() {
                   alt={s.alt}
                   className="h-44 w-full object-cover transition duration-300 group-hover:scale-[1.02]"
                   loading="lazy"
+                  decoding="async"
+                  width={s.w}
+                  height={s.h}
+                  sizes="(min-width:1024px) 33vw, (min-width:640px) 50vw, 100vw"
                 />
                 <figcaption className="p-4">
                   <div className="font-semibold">{s.title}</div>
@@ -213,7 +221,7 @@ export default function Home() {
       </section>
 
       {/* FEATURES */}
-      <section id="features" className="relative py-16">
+      <section id="features" className="section-cv relative py-16">
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-10 bg-gradient-to-br from-neutral-50 via-white to-emerald-50/40" />
         <div className="mx-auto max-w-6xl px-4">
           <h2 className="text-2xl font-bold">Funciones clave</h2>
@@ -229,7 +237,7 @@ export default function Home() {
       </section>
 
       {/* PRICING */}
-      <section id="prices" className="relative py-16">
+      <section id="prices" className="section-cv relative py-16">
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute inset-0 bg-[radial-gradient(60%_60%_at_50%_0%,rgba(16,185,129,0.10),transparent_60%)]" />
         </div>
@@ -264,7 +272,6 @@ export default function Home() {
                 </div>
 
                 <div className="mt-6 flex flex-wrap gap-3">
-                  {/* 👉 Link al registro */}
                   <Link to="/registro" className="inline-flex items-center gap-2 rounded-xl bg-neutral-900 px-5 py-3 text-white hover:bg-neutral-800">
                     Empezar <span aria-hidden>→</span>
                   </Link>
@@ -307,7 +314,7 @@ export default function Home() {
       </section>
 
       {/* FAQ */}
-      <section id="faq" className="relative py-5">
+      <section id="faq" className="section-cv relative py-5">
         <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
           <div className="absolute inset-0 opacity-[0.16] bg-[radial-gradient(#d1d5db_1px,transparent_1px)] [background-size:20px_20px]" />
         </div>
@@ -326,7 +333,7 @@ export default function Home() {
       </section>
 
       {/* CTA final */}
-      <section className="relative isolate border-t border-neutral-200 py-16 bg-gradient-to-br from-emerald-600 via-emerald-500 to-teal-500">
+      <section className="section-cv relative isolate border-t border-neutral-200 py-16 bg-gradient-to-br from-emerald-600 via-emerald-500 to-teal-500">
         <div className="mx-auto max-w-6xl px-4 text-center text-white">
           <h3 className="text-xl font-bold">¿Listo para modernizar tu operación?</h3>
           <p className="mt-2 text-white/90">
@@ -334,7 +341,6 @@ export default function Home() {
             <Link to="/contacto" className="underline">Contáctanos</Link>.
           </p>
           <div className="mt-5 flex items-center justify-center gap-3">
-            {/* 👉 Link al registro */}
             <Link
               to="/registro"
               className="rounded-xl bg-white px-5 py-3 font-medium text-emerald-700 hover:bg-emerald-50"

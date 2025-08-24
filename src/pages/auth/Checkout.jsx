@@ -1,68 +1,109 @@
 // src/pages/auth/Checkout.jsx
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import { supabase } from "../../lib/supabaseClient";
-
-// Password temporal simple (recuerda luego hashearlo en el backend/BD)
-function genTempPassword(len = 10) {
-  const bytes = new Uint8Array(len);
-  crypto.getRandomValues(bytes);
-  return Array.from(bytes, (b) => (b % 36).toString(36)).join("");
-}
+import { prepareCheckout } from "../../lib/api";
+import ComprobanteModal from "./components/ComprobanteModal.jsx";
 
 export default function Checkout() {
   const { state } = useLocation(); // { form: { nombre, contacto, telefono, email }, plan }
   const nav = useNavigate();
+
+  // Rehidratación si recargan la página
+  const form = useMemo(() => {
+    if (state?.form) return state.form;
+    const saved = sessionStorage.getItem("registro_restaurante");
+    return saved ? JSON.parse(saved) : null;
+  }, [state]);
+
+  const plan = useMemo(() => {
+    if (state?.plan) return state.plan;
+    const saved = sessionStorage.getItem("plan");
+    return saved ? JSON.parse(saved) : { id: "basic", name: "Básico", price: 300 };
+  }, [state]);
+
+  const restaurantName = form?.nombre || "—";
+
   const [saving, setSaving] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
 
-  const plan = state?.plan || { id: "basic", name: "Básico", price: 300 };
-  const restaurantName = state?.form?.nombre;
+  useEffect(() => {
+    if (!form) nav("/registro");
+  }, [form, nav]);
 
-  const proceed = async () => {
-    if (!state?.form?.nombre || !state?.form?.contacto || !state?.form?.email) {
-      alert("Completa nombre del restaurante, contacto y email.");
-      return;
-    }
+  if (!form) return null;
 
+  const proceed = () => setOpenModal(true);
+
+  // Confirmación del modal → crear orden y abrir Culqi / redirigir
+  const onConfirmModal = async ({ docType, customer }) => {
+    setOpenModal(false);
     try {
       setSaving(true);
 
-      const tempPass = genTempPassword();
+      const payload = {
+        planId: plan.id,
+        amount: Math.round(Number(plan.price) * 100), // céntimos
+        currency: "PEN",
+        restaurant: { id: null, name: restaurantName },
+        docType, // "01"=Factura, "03"=Boleta
+        customer: {
+          email: customer.email,
+          phone: customer.phone,
+          fullName: customer.fullName,
+          dni: customer.dni || "",
+          ruc: customer.ruc || "",
+          razonSocial: customer.razonSocial || "",
+          direccionFiscal: customer.direccionFiscal || "",
+        },
+      };
 
-      // 👇 Llamamos a TU función RPC para crear restaurante y usuario admin (tenant)
-      const { data, error } = await supabase.rpc(
-        "register_restaurant_and_admin",
-        {
-          p_restaurant_name: state.form.nombre,        // nombre del restaurante (tenant)
-          p_phone: state.form.telefono ?? null,
-          p_contact_name: state.form.contacto,         // nombre del admin
-          p_email: state.form.email,
-          p_password: tempPass,                        // temporal
-          p_role: "admin",
-        }
-      );
+      const data = await prepareCheckout(payload);
 
-      if (error) {
-        console.error(error);
-        alert("No se pudo registrar. Revisa que el email no exista y los permisos de la función.");
+      // Opción A: Link de pago (si tu backend decide usarlo)
+      if (data?.paymentUrl) {
+        window.location.href = data.paymentUrl;
         return;
       }
 
-      const { user_id, restaurant_id } = (Array.isArray(data) ? data[0] : data) || {};
-      if (!user_id || !restaurant_id) {
-        alert("Registro incompleto. Verifica la función RPC.");
+      // Opción B: Custom Checkout con checkout-js
+      if (data?.culqi?.orderId && window.Culqi) {
+        const publicKey = import.meta.env.VITE_CULQI_PUBLIC_KEY;
+        const amount    = Number(payload.amount);   // céntimos
+        const currency  = payload.currency || "PEN";
+        const orderId   = data.culqi.orderId;
+
+        // 1) Configurar Culqi
+        window.Culqi.publicKey = publicKey;
+        // ¡OJO! settings es una FUNCIÓN, no un objeto:
+        window.Culqi.settings({
+          title: "MikhunApp",
+          currency,
+          amount,
+          order: orderId,
+        });
+
+        // 2) Callback global
+        window.culqi = function () {
+          if (window.Culqi?.order) {
+            console.log("Order:", window.Culqi.order);
+            alert("Procesando pago… te avisaremos por correo.");
+          } else if (window.Culqi?.token) {
+            console.log("Token:", window.Culqi.token.id);
+          } else if (window.Culqi?.error) {
+            console.warn("Culqi error:", window.Culqi.error);
+            alert(window.Culqi.error?.user_message || "Error en el pago");
+          }
+        };
+
+        // 3) Abrir modal
+        window.Culqi.open();
         return;
       }
 
-      alert(
-        `Listo 🎉\nRestaurante (tenant_id): ${restaurant_id}\nUsuario admin: ${user_id}\n(Password temporal: ${tempPass})`
-      );
-
-      // Aquí abrirías Culqi. Por ahora, volvemos al inicio:
-      nav("/");
+      alert("No se pudo iniciar el pago. Revisa la configuración del backend.");
     } catch (e) {
       console.error(e);
-      alert("Ocurrió un error inesperado.");
+      alert("Error iniciando el pago.");
     } finally {
       setSaving(false);
     }
@@ -97,14 +138,21 @@ export default function Checkout() {
             disabled={saving}
             className="mt-6 w-full rounded-xl bg-emerald-600 px-5 py-3 text-sm font-semibold text-white hover:bg-emerald-500 disabled:opacity-60"
           >
-            {saving ? "Guardando…" : "Continuar a pago (Culqi)"}
+            {saving ? "Procesando…" : "Continuar a pago (Culqi)"}
           </button>
         </div>
 
         <p className="mt-4 text-xs text-neutral-500">
-          Pagos procesados por Culqi u otra pasarela de pago. Emitimos comprobante al correo registrado.
+          Pagos procesados por Culqi. Emitimos comprobante al correo registrado.
         </p>
       </div>
+
+      <ComprobanteModal
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        onConfirm={onConfirmModal}
+        prefill={form}
+      />
     </main>
   );
 }
