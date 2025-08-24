@@ -1,48 +1,40 @@
-// src/services/api.js
 const API = import.meta.env.VITE_API_URL || "http://localhost:4000";
 
 const authHeader = () => {
-  const t = localStorage.getItem("client_token"); // si usas token de cliente
+  const t = localStorage.getItem("client_token");
   return t ? { Authorization: `Bearer ${t}` } : {};
 };
 
-export async function apiCrearPedido({ mesaId, items, idempotencyKey }) {
-  const res = await fetch(`${API}/api/pedidos`, {
+async function get(path) {
+  const res = await fetch(`${API}${path}`);
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+async function post(path, body, withAuth=false) {
+  const res = await fetch(`${API}${path}`, {
     method: "POST",
-    headers: { "Content-Type": "application/json", ...authHeader() },
-    body: JSON.stringify({ mesaId, items, idempotencyKey }),
+    headers: { "Content-Type": "application/json", ...(withAuth ? authHeader() : {}) },
+    body: JSON.stringify(body),
   });
   if (!res.ok) throw new Error(await res.text());
-  return res.json(); // { pedidoId, total }
+  return res.json();
 }
 
-export async function apiCulqiOrder({ amount, email, description, metadata, paymentMethods }) {
-  const res = await fetch(`${API}/api/pay/culqi/order`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...authHeader() },
-    body: JSON.stringify({ amount, email, description, metadata, paymentMethods }),
-  });
-  if (!res.ok) throw new Error(await res.text());
-  return res.json(); // { order }
-}
+/* Privado (ya los tenías) */
+export const apiCrearPedido = ({ mesaId, items, idempotencyKey }) =>
+  post(`/api/pedidos`, { mesaId, items, idempotencyKey }, true);
+export const apiCulqiOrder  = ({ amount, email, description, metadata, paymentMethods }) =>
+  post(`/api/pay/culqi/order`, { amount, email, description, metadata, paymentMethods }, true);
+export const apiCulqiCharge = ({ amount, email, tokenId, description, metadata }) =>
+  post(`/api/pay/culqi/charge`, { amount, email, tokenId, description, metadata }, true);
 
-export async function apiCulqiCharge({ amount, email, tokenId, description, metadata }) {
-  const res = await fetch(`${API}/api/pay/culqi/charge`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...authHeader() },
-    body: JSON.stringify({ amount, email, tokenId, description, metadata }),
-  });
-  if (!res.ok) throw new Error(await res.text());
-  return res.json(); // { charge }
-}
+/* Dev */
+export const simularPago = (pedidoId) => post(`/api/dev/simular-pago`, { pedidoId });
 
-// ✅ NUEVO: simular pago (actualiza estado a pagado y EMITE al KDS)
-export async function simularPago(pedidoId) {
-  const res = await fetch(`${API}/api/dev/simular-pago`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ pedidoId }),
-  });
-  if (!res.ok) throw new Error(await res.text());
-  return res.json(); // { ok, emitted }
-}
+/* Público (BYO keys) */
+export const apiGetPublicConfig = (restaurantId) =>
+  get(`/api/pay/public/${restaurantId}/config`);
+export const apiPreparePublicOrder = (restaurantId, payload) =>
+  post(`/api/pay/public/${restaurantId}/checkout/prepare`, payload);
+export const apiChargePublicToken = (restaurantId, payload) =>
+  post(`/api/pay/public/${restaurantId}/checkout/charge`, payload);

@@ -12,6 +12,8 @@ export function MenuProvider({ children }) {
 
   const params = new URLSearchParams(location.search);
   const restaurantId = Number(params.get("restaurantId") || 1);
+  const mesaId   = Number(params.get("mesaId") || 0);
+  const mesaCode = params.get("mesaCode") || null;
 
   useEffect(() => {
     (async () => {
@@ -30,7 +32,10 @@ export function MenuProvider({ children }) {
     })();
   }, [restaurantId]);
 
-  const value = useMemo(() => ({ loading, error, categories, combos, restaurantId }), [loading, error, categories, combos, restaurantId]);
+  const value = useMemo(
+    () => ({ loading, error, categories, combos, restaurantId, mesaId, mesaCode }),
+    [loading, error, categories, combos, restaurantId, mesaId, mesaCode]
+  );
   return <MenuCtx.Provider value={value}>{children}</MenuCtx.Provider>;
 }
 

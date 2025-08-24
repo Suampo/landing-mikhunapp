@@ -1,7 +1,7 @@
-// src/pages/Home.jsx
 import { useNavigate } from "react-router-dom";
 import CategoryTile from "../components/CategoryTile";
 import { useMenuPublic } from "../hooks/useMenuPublic";
+import { openPublicCheckoutCulqi } from "../services/culqi";
 
 const FALLBACK =
   "data:image/svg+xml;utf8," +
@@ -13,17 +13,46 @@ const FALLBACK =
 
 export default function Home() {
   const nav = useNavigate();
-  const { loading, error, categories, combos, restaurantId } = useMenuPublic();
+  const { loading, error, categories, combos, restaurantId, mesaId, mesaCode } = useMenuPublic();
 
-  const mesa = new URLSearchParams(location.search).get("mesaCode")
-            || new URLSearchParams(location.search).get("mesaId")
-            || 1;
+  const mesa = (mesaCode && `#${mesaCode}`) || (mesaId ? `Mesa ${mesaId}` : "—");
+
+  // TODO: reemplaza por el total real del carrito en soles
+  const totalEnSoles = 5;
+  const amount = Math.round(Number(totalEnSoles) * 100);
+
+  const onPay = async () => {
+    try {
+      const metadata = {};
+      if (mesaCode) metadata.table_code = String(mesaCode);
+      if (mesaId)   metadata.mesaId = Number(mesaId);
+
+      const customer = {
+        email: localStorage.getItem("guest_email") || "cliente.demo@correo.com",
+        fullName: localStorage.getItem("guest_name") || "",
+        phone: localStorage.getItem("guest_phone") || "",
+      };
+
+      await openPublicCheckoutCulqi({
+        restaurantId,
+        amount,
+        customer,
+        metadata,
+        currency: "PEN",
+        description: "Pedido en MikhunApp",
+      });
+    } catch (e) {
+      console.error(e);
+      alert("No se pudo iniciar el pago.");
+    }
+  };
 
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-6 pb-28">
       <header className="mb-5">
-        <h1 className="text-xl font-bold">🍽 Menú Digital — Mesa {mesa}</h1>
+        <h1 className="text-xl font-bold">🍽 Menú Digital — {mesa}</h1>
         <p className="text-sm text-neutral-500">Restaurant: {restaurantId}</p>
+     
       </header>
 
       {/* Combos */}
@@ -47,7 +76,6 @@ export default function Home() {
 
       {/* Categorías */}
       <h2 className="mb-3 text-lg font-semibold">Empieza tu pedido aquí</h2>
-
       {loading ? (
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
           {Array.from({ length: 6 }).map((_, i) => (
