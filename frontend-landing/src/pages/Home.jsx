@@ -5,9 +5,9 @@ export default function Home() {
   const services = [
     { title: "Panel de inicio (Admin)", desc: "Resumen operativo: ventas del día, pedidos activos, producto más vendido y curva de últimos 7 días.", img: "/services/01-dashboard.jpg", alt: "Panel admin", w:1280, h:720 },
     { title: "Mesas y QRs", desc: "Crea/edita mesas, genera un QR por mesa en un clic y mantén todo ordenado con búsqueda.", img: "/services/02-mesas.jpg", alt: "Mesas y QR", w:1280, h:720 },
-    { title: "Menú (Administrador)", desc: "Gestiona categorías, precios, fotos y disponibilidad. Crea combos y define sus componentes.", img: "/services/03-menu-admin.jgp", alt: "Menú admin", w:1280, h:720 },
+    { title: "Menú (Administrador)", desc: "Gestiona categorías, precios, fotos y disponibilidad. Crea combos y define sus componentes.", img: "/services/03-menu-admin.jpg", alt: "Menú admin", w:1280, h:720 },
     { title: "Pedidos en vivo (Cocina)", desc: "Panel de cocina/KDS con estados en tiempo real. Compatible con comanda impresa.", img: "/services/04-pedidos-cocina.jpg", alt: "Cocina KDS", w:1280, h:720 },
-    { title: "Menú Digital — Fondos", desc: "Catálogo de platos de fondo, fotos grandes y botón de agregar. Optimizado para móvil.", img: "/services/05-menu-fondos.jgp", alt: "Fondos", w:1280, h:720 },
+    { title: "Menú Digital — Fondos", desc: "Catálogo de platos de fondo, fotos grandes y botón de agregar. Optimizado para móvil.", img: "/services/05-menu-fondos.jpg", alt: "Fondos", w:1280, h:720 },
     { title: "Menú Digital — Entradas", desc: "Sección de entradas con imágenes, descripción breve y precio visible.", img: "/services/06-menu-entradas.jpg", alt: "Entradas", w:1280, h:720 },
     { title: "Menú Digital — Extras", desc: "Agrega extras y adicionales. Todo configurable desde el panel admin.", img: "/services/07-menu-extras.jpg", alt: "Extras", w:1280, h:720 },
     { title: "Combos (card)", desc: "Crea combos del día (ej. Menú S/ 12). Define precio y categorías permitidas.", img: "/services/08-combos-card.jpg", alt: "Combos card", w:1280, h:720 },
@@ -120,7 +120,7 @@ export default function Home() {
                 muted
                 playsInline
                 preload="metadata"
-                poster="/services/01-dashboard.png"
+                poster="/services/01-dashboard.jpg"
                 onError={(e) => {
                   e.currentTarget.outerHTML =
                     '<img src="/services/QR.jpg" alt="Panel" class="h-full w-full object-cover" width="1280" height="720"/>';
